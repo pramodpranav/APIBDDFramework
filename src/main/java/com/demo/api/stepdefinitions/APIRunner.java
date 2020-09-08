@@ -105,12 +105,14 @@ public class APIRunner extends INVCommonTestBase{
 		testConfig.wait(testConfig, 2);
 		HashMap<String, String> apiHeaders = new HashMap<String, String>();
 		HashMap<String,String> requestBody = new HashMap<String,String>();
+		String jsonbody;
 		requestBody.put("username", username);
 		requestBody.put("password", password);
 		String fullURL = testConfig.getRunTimeProperty("APIBaseURL") + testConfig.getRunTimeProperty("AuthorizationAPIEndPoint");
 		apiHeaders.put("Content-Type", "application/json");
+		jsonbody = APIService.createJsonParameters(testConfig,requestBody);
 		testConfig.apiResponse = APIService.executeAndGetResponse(testConfig, fullURL, APIMethodType.APIMethodsType.POST.getValue(), requestBody,
-				apiHeaders, null, true);
+				null, jsonbody, true);
     }
 	
 
