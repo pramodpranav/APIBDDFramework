@@ -1,0 +1,90 @@
+{
+  "body": [
+    {
+      "schema": null,
+      "payload": {
+        "expiration": 0,
+        "event": "user-management",
+        "key": "U|1",
+        "content": {
+          "org": "45",
+          "type": "CREATE_USER",
+          "Id": 1,
+          "userStatus": 1
+        }
+      }
+    },
+    {
+      "schema": null,
+      "payload": {
+        "expiration": 0,
+        "event": "user-management",
+        "key": "U|1",
+        "content": {
+          "org": "45",
+          "type": "UPDATE_USER",
+          "Id": 1,
+          "userStatus": 1
+        }
+      }
+    },
+    {
+      "schema": null,
+      "payload": {
+        "expiration": 0,
+        "event": "user-management",
+        "key": "U|1",
+        "content": {
+          "org": "45",
+          "type": "GET_USER",
+          "Id": 1,
+          "userStatus": 1
+        }
+      }
+    },
+    {
+      "schema": null,
+      "payload": {
+        "expiration": 0,
+        "event": "user-management",
+        "key": "U|1",
+        "content": {
+          "org": "45",
+          "type": "DELETE_USER",
+          "Id": 1,
+          "userStatus": 1
+        }
+      }
+    },
+    {
+      "schema": null,
+      "payload": {
+        "expiration": 0,
+        "event": "user-management",
+        "key": "A|1",
+        "content": {
+          "org": "45",
+          "type": "GET_ALL_USER"
+        }
+      }
+    },
+    {
+      "id": 0,
+      "category": {
+        "id": 0,
+        "name": "string"
+      },
+      "name": "doggie",
+      "photoUrls": [
+        "string"
+      ],
+      "tags": [
+        {
+          "id": 0,
+          "name": "string"
+        }
+      ],
+      "status": "available"
+    }
+  ]
+}
