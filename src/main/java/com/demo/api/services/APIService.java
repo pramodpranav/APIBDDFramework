@@ -34,15 +34,12 @@ public class APIService {
 	 * @param testConfig
 	 * @param fullUrl	Complete API request URL (baseUrl + command + parameters)
 	 * @param method	get/post/delete/put
-	 * @param apiParameters	API Query parameters, if it is null the excel parameters will be used
+	 * @param apiParameters	API Query parameters
 	 * @param apiHeaders	API Headers
 	 * @return complete raw restassured Response
 	 */
-	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiParameters, Map<String, String> apiHeaders,String jsonBody,Boolean paraminbody){
+	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiParameters, Map<String, String> apiHeaders,String jsonBody){
 
-		//remove the query params from full url
-		String[] cmd = fullUrl.split("\\?");
-		String requestUrl = cmd[0];
 		// Prepare request
 		RequestSpecification reqspec = given();
 
@@ -58,9 +55,9 @@ public class APIService {
 			}
 		}
 
-		reqspec=reqspec.config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().defaultContentCharset("UTF-8")));
+		//reqspec=reqspec.config(RestAssured.config().encoderConfig(EncoderConfig.encoderConfig().defaultContentCharset("UTF-8")));
 
-		if(paraminbody && jsonBody!=null){
+		if(jsonBody!=null){
 			reqspec = reqspec.body(jsonBody);
 		}
 		else if(apiParameters != null)
@@ -77,15 +74,6 @@ public class APIService {
 				}
 			}
 		}
-		else if(cmd.length >1){
-			String parameters[] = cmd[1].split("&");
-			for(int i=0 ; i<parameters.length; i++) {
-				String key = parameters[i].split("=")[0];
-				String value=parameters[i].split("=")[1];
-				reqspec = reqspec
-						.queryParam(key, value);
-			}
-		}
 
 		// Log the request details
 		reqspec = reqspec
@@ -100,19 +88,19 @@ public class APIService {
 		{
 		case "get":
 			response = reqspec
-			.get(requestUrl);
+			.get(fullUrl);
 			break;
 		case "post":
 			response = reqspec
-			.post(requestUrl);
+			.post(fullUrl);
 			break;
 		case "delete":
 			response = reqspec
-			.delete(requestUrl);
+			.delete(fullUrl);
 			break;
 		case "put":
 			response = reqspec
-			.put(requestUrl);
+			.put(fullUrl);
 			break;
 		}
 
@@ -122,7 +110,7 @@ public class APIService {
 				.extract()
 				.response();
 
-		LoggerHelper.logComment(testConfig,"API Response for " + requestUrl + " :- "+ response.asString());
+		LoggerHelper.logComment(testConfig,"API Response for " + fullUrl + " :- "+ response.asString());
 		return response;
 	}
 
@@ -185,39 +173,7 @@ public class APIService {
 		return jsonPostParameters.toString();
 	}
 
-	/**
-	 * Gets the Authorization value, which is required by the API's
-	 * @param testConfig
-	 * @param apiUrl	API request URL (baseUrl + command)
-	 * @return
-	 */
-	public static HashMap<String, String> getAuthorizationHeaderFromLoginAPI(Config testConfig)
-	{
-		HashMap<String, String> authorization = new HashMap<String, String>();
-		HashMap<String,String> header = new HashMap<String,String>();
-		try
-		{
-			LoggerHelper.logComment(testConfig,"<<---------------Need to Get Authorization for this API------------------->>");
-			HashMap<String, String> apiParameters = new HashMap<String, String>();
-			apiParameters.put("username", testConfig.getRunTimeProperty("userName"));
-			apiParameters.put("password", testConfig.getRunTimeProperty("password"));
-			String fullUrl = testConfig.getRunTimeProperty("APIBaseURL") + testConfig.getRunTimeProperty("AuthorizationAPIEndPoint");
-			String jsonBody = createJsonParameters(testConfig,apiParameters);
-			header.put("Content-Type", "application/json");
-			Response response = executeAndGetResponse( testConfig,  fullUrl,APIMethodsType.POST.getValue(), null,header, jsonBody,true);
-			authorization.put("token", response.jsonPath().getString("token"));
-			authorization.put("cookie", response.getHeader("Set-Cookie"));
-			LoggerHelper.logComment(testConfig,"<<---------------Got Authorization userVal as:- " + authorization + "------------------->>");
-			return authorization;
-		}
-		catch(Exception e)
-		{
-			LoggerHelper.logException(e,testConfig);
-		}
 
-		return null;
-	}
-	
 	/**
 	 * Function to convert JSON file to JSON object
 	 * @param fileLocationURL
@@ -256,8 +212,8 @@ public class APIService {
 	 * @param paraminbody
 	 * @return
 	 */
-	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiParameters, Map<String, String> apiHeaders) {
-		return executeAndGetResponse(testConfig,fullUrl,methodType,apiParameters,apiHeaders,null,false);
+	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> queryParameter, Map<String, String> apiHeaders) {
+		return executeAndGetResponse(testConfig,fullUrl,methodType,queryParameter,apiHeaders,null);
 	}
 
 	/**
@@ -266,10 +222,25 @@ public class APIService {
 	 * @param fullUrl
 	 * @param methodType
 	 * @param apiHeaders
-	 * @param apiInBody
+	 * @param jsonBody
 	 * @return
 	 */
-	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiHeaders,String apiInBody) {
-		return executeAndGetResponse(testConfig,fullUrl,methodType,null,apiHeaders,null,true);
+	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiHeaders,String jsonBody) {
+		return executeAndGetResponse(testConfig,fullUrl,methodType,null,apiHeaders,jsonBody);
+	}
+	
+	/**
+	 * To call API with Parameter in API
+	 * @param testConfig
+	 * @param fullUrl
+	 * @param methodType
+	 * @param apiParameters
+	 * @param apiHeaders
+	 * @param jsonBody
+	 * @param paraminbody
+	 * @return
+	 */
+	public static Response executeAndGetResponse(Config testConfig, String fullUrl, String methodType, Map<String, String> apiHeaders) {
+		return executeAndGetResponse(testConfig,fullUrl,methodType,null,apiHeaders,null);
 	}
 }
